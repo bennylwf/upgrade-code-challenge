@@ -1,0 +1,228 @@
+openapi: 3.0.2
+info:
+  version: '1.0'
+  title: Campsite API 1.0
+  description: 'Specification for campsite API V1'
+
+servers:
+  - url: http://localhost:8080/campsite-service/v1
+    description: Campsite Service Local API server
+
+tags:
+  - name: Booking
+    description: ''
+
+
+paths:
+  '/availableDate':
+    get:
+      security:
+        - ApiKey: []
+          Bearer: []
+      tags:
+        - AvailableDate
+      operationId: getAvailableDate
+      parameters:
+        - name: checkInDate
+          in: query
+          description: the check in date
+          required: true
+          schema:
+            type: string
+            minLength: 10
+            maxLength: 10
+        - name: checkOutDate
+          in: query
+          description: check out date
+          required: true
+          schema:
+            type: string
+            minLength: 10
+            maxLength: 10
+        - name: confirmCode
+          in: query
+          description: booking confirmation code
+          required: false
+          schema:
+            type: string
+            minLength: 10
+            maxLength: 10
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailableDate'
+        '400':
+          description: Invalid confirmation code supplied
+
+  '/booking':
+    post:
+      security:
+        - ApiKey: []
+          Bearer: []
+      tags:
+        - Booking
+      summary: Add a booking
+      description: This api is to make reservation
+      operationId: addBooking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Booking'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '400':
+          description: Failed to book campsite
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/BadRequest'
+
+  '/booking/{confirmCode}':
+    parameters:
+      - name: confirmCode
+        in: path
+        description: booking confirmation code
+        required: true
+        schema:
+          type: string
+          minLength: 10
+          maxLength: 10
+    get:
+      security:
+        - ApiKey: []
+          Bearer: []
+      tags:
+        - Booking
+      operationId: getBookingByConfirmCode
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '400':
+          description: Invalid confirmation code supplied
+
+    put:
+      security:
+        - ApiKey: []
+          Bearer: []
+      tags:
+        - Booking
+      summary: Update a booking
+      description: This api is to update reservation
+      operationId: updateBooking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Booking'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '400':
+          description: Failed to update booking
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/BadRequest'
+
+    delete:
+      security:
+        - ApiKey: []
+          Bearer: []
+      tags:
+        - Booking
+      summary: cancel a booking
+      description: This api is to cancel reservation
+      operationId: cancelBooking
+      responses:
+        '400':
+          description: Failed to cancel booking
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/BadRequest'
+
+components:
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWE
+  schemas:
+   
+    Booking:
+      description: Booking
+      required:
+        - email
+        - firstName
+        - lastName
+        - checkInDate
+        - checkOutDate
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          pattern: "^(.+)@(.+)$"
+          maxLength: 254
+        firstName:
+          type: string
+          maxLength: 30
+        lastName:
+          type: string
+          maxLength: 30       
+        checkInDate:
+          type: string
+          format: date
+        checkOutDate:
+          type: string
+          format: date
+        confirmCode:
+          type: string
+          minLength: 10
+          maxLength: 10
+
+    AvailableDate:
+      description: Available dates
+      properties:
+        avaDates:
+          type: array
+          maxItems: 3
+          items:
+            type: string
+            format: date
+
+    BadRequest:
+      title: BadRequest
+      properties:
+        message:
+          type: string
+          description: >-
+            End user displayable information which might help the user diagnose
+            the problem.
+        errorCode:
+          type: string
+          description: Error code

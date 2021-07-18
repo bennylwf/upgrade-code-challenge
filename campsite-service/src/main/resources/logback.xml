@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <contextName>campsite-service</contextName>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%boldMagenta([%date]) [%thread] %highlight([%level])  %boldCyan([%logger{10} %file:%line])  %yellow(%msg%n)</pattern>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+    <!-- Uncomment following to turn on Datasource  HikariPool log-->
+<!--    <logger name="com.zaxxer" level="debug">-->
+<!--        <appender-ref ref="CONSOLE"/>-->
+<!--    </logger>-->
+
+    <logger name="com.mybooking" level="info" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+</configuration>

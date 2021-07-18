@@ -1,0 +1,33 @@
+version: "3.1"
+# https://docs.docker.com/compose/compose-file/
+
+services:
+
+  mysql:
+    image: mysql:5.7.18
+    container_name: localtest_mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+     - "3306:3306"
+    volumes:
+      - ./mysql/config:/etc/mysql/conf.d
+      - localstest_mysql_data:/var/lib/mysql
+    networks:
+      - localstest-network
+  redis:
+    image: "redis:alpine"
+    container_name: localstest_redis
+    networks:
+      - localstest-network
+    ports:
+      - "6379:6379"
+
+networks:
+    localstest-network:
+        ipam: 
+            config: 
+            - 
+              subnet: 192.168.8.1/24
+volumes:
+  localstest_mysql_data:
